@@ -6,6 +6,7 @@ paths=${BACKUP_FILESYSTEM_PATHS}
 s3_bucket=${S3_BUCKET}
 s3_access_key=${S3_ACCESS_KEY}
 s3_secret_key=${S3_SECRET_KEY}
+aws_endpoint_url=${AWS_ENDPOINT_URL}
 override_hostname=${OVERRIDE_HOSTNAME}
 
 function write_log {
@@ -31,6 +32,10 @@ IFS=','
 paths_arr=($paths)
 unset IFS
 
+if [ -n "$aws_endpoint_url" ]; then
+	opts="--endpoint-url=$aws_endpoint_url"
+fi
+
 for path in "${paths_arr[@]}"; do
 	if [ ! -e "$path" ]; then
 		write_log "Path $path does not exists"
@@ -42,8 +47,8 @@ for path in "${paths_arr[@]}"; do
 	write_log "Uploading path $path"
 
 	if [ -d "$path" ]; then
-		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws s3 sync "$path" $object --no-progress
+		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 sync "$path" $object --no-progress
 	else
-		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws s3 cp "$path" $object --no-progress
+		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 cp "$path" $object --no-progress
 	fi
 done
