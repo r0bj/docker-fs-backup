@@ -13,12 +13,12 @@ function write_log {
 	echo "`date +'%Y%m%d %H%M%S'`: $1"
 }
 
-if [ -z "$paths" ] || [ -z "$s3_bucket" ] || [ -z "$s3_access_key" ] || [ -z "$s3_secret_key" ]; then
+if [[ -z "$paths" || -z "$s3_bucket" || -z "$s3_access_key" || -z "$s3_secret_key" ]]; then
 	write_log "One or more parameter empty"
 	exit 1
 fi
 
-if [ -n "$override_hostname" ]; then
+if [[ -n "$override_hostname" ]]; then
 	hostname=$override_hostname
 else
 	hostname=$(hostname)
@@ -32,12 +32,12 @@ IFS=','
 paths_arr=($paths)
 unset IFS
 
-if [ -n "$aws_endpoint_url" ]; then
+if [[ -n "$aws_endpoint_url" ]]; then
 	opts="--endpoint-url=$aws_endpoint_url"
 fi
 
 for path in "${paths_arr[@]}"; do
-	if [ ! -e "$path" ]; then
+	if [[ ! -e "$path" ]]; then
 		write_log "Path $path does not exists"
 		exit 1
 	fi
@@ -46,7 +46,7 @@ done
 for path in "${paths_arr[@]}"; do
 	write_log "Uploading path $path"
 
-	if [ -d "$path" ]; then
+	if [[ -d "$path" ]]; then
 		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 sync "$path" $object --no-progress
 	else
 		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 cp "$path" $object --no-progress
