@@ -9,12 +9,12 @@ s3_secret_key=${S3_SECRET_KEY}
 aws_endpoint_url=${AWS_ENDPOINT_URL}
 override_hostname=${OVERRIDE_HOSTNAME}
 
-function write_log {
+function log {
 	echo "`date +'%Y%m%d %H%M%S'`: $1"
 }
 
 if [[ -z "$paths" || -z "$s3_bucket" || -z "$s3_access_key" || -z "$s3_secret_key" ]]; then
-	write_log "One or more parameter empty"
+	log "One or more parameter empty"
 	exit 1
 fi
 
@@ -38,17 +38,17 @@ fi
 
 for path in "${paths_arr[@]}"; do
 	if [[ ! -e "$path" ]]; then
-		write_log "Path $path does not exists"
+		log "Path $path does not exists"
 		exit 1
 	fi
 done
 
 for path in "${paths_arr[@]}"; do
-	write_log "Uploading path $path"
-
+	log "Uploading path $path"
 	if [[ -d "$path" ]]; then
 		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 sync "$path" $object --no-progress
 	else
 		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 cp "$path" $object --no-progress
 	fi
+	log "Uploading path $path done"
 done
