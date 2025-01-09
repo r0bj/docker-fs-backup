@@ -43,12 +43,17 @@ for path in "${paths_arr[@]}"; do
 	fi
 done
 
+export AWS_ACCESS_KEY_ID=$s3_access_key
+export AWS_SECRET_ACCESS_KEY=$s3_secret_key
+export AWS_RETRY_MODE=standard
+export AWS_MAX_ATTEMPTS=6
+
 for path in "${paths_arr[@]}"; do
 	log "Uploading path $path"
 	if [[ -d "$path" ]]; then
-		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 sync "$path" $object --no-progress
+		aws $opts s3 sync "$path" $object --no-progress
 	else
-		AWS_ACCESS_KEY_ID=$s3_access_key AWS_SECRET_ACCESS_KEY=$s3_secret_key aws $opts s3 cp "$path" $object --no-progress
+		aws $opts s3 cp "$path" $object --no-progress
 	fi
 	log "Uploading path $path done"
 done
