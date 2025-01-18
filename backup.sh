@@ -28,16 +28,16 @@ filesystem_backup_duration_seconds $duration
 # HELP filesystem_backup_last_success_timestamp_seconds Unixtime filesystem backup last succeeded
 # TYPE filesystem_backup_last_success_timestamp_seconds gauge
 filesystem_backup_last_success_timestamp_seconds $(date +%s.%7N)
-# HELP filesystem_backup_last_success Success of filesystem backup
-# TYPE filesystem_backup_last_success gauge
-filesystem_backup_last_success 1
+# HELP filesystem_backup_status Status of filesystem backup
+# TYPE filesystem_backup_status gauge
+filesystem_backup_status 1
 EOF
 		else
 			log "Notifying prometheus: backup failed"
 cat <<EOF | curl -o /dev/null -s -w "URL: %{url_effective}\nRemote IP: %{remote_ip}\nHTTP Code: %{http_code}\n" --max-time 60 $curl_opts -XPOST --data-binary @- ${prometheus_pushgateway_url}/metrics/job/${prometheus_job}/instance/$hostname
-# HELP filesystem_backup_last_success Success of filesystem backup
-# TYPE filesystem_backup_last_success gauge
-filesystem_backup_last_success 0
+# HELP filesystem_backup_status Status of filesystem backup
+# TYPE filesystem_backup_status gauge
+filesystem_backup_status 0
 EOF
 		fi
 	fi
