@@ -95,8 +95,9 @@ start_timastamp=$(date +'%s')
 
 push_state_metric 1
 bash /fs-backup.sh
+backup_exit_code=$?
 push_state_metric 0
-if [[ "$?" -eq 0 ]]; then
+if [[ "$backup_exit_code" -eq 0 ]]; then
 	duration=$(($(date +'%s') - $start_timastamp))
 	push_status_metric 1 $duration
 	exit 0
