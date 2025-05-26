@@ -8,6 +8,7 @@ s3_access_key=${S3_ACCESS_KEY}
 s3_secret_key=${S3_SECRET_KEY}
 aws_endpoint_url=${AWS_ENDPOINT_URL}
 override_hostname=${OVERRIDE_HOSTNAME}
+directory=${DIRECTORY}
 
 function log {
 	echo "`date +'%Y%m%d %H%M%S'`: $1"
@@ -26,7 +27,11 @@ fi
 
 date=$(date +'%Y%m%d')
 timestamp=$(date +'%Y%m%d_%H%M%S')
-object="s3://${s3_bucket}/${hostname}/${date}/${timestamp}/"
+if [[ -n "$directory" ]]; then
+	object="s3://${s3_bucket}/${hostname}/${directory}/${date}/${timestamp}/"
+else
+	object="s3://${s3_bucket}/${hostname}/${date}/${timestamp}/"
+fi
 
 IFS=','
 paths_arr=($paths)
